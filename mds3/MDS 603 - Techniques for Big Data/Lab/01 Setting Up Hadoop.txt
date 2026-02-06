@@ -1,0 +1,59 @@
+Setting up environment variables:
+
+C:\hadoopsetup\hadoop-3.2.4
+C:\Progra~1\Java\jdk-1.8
+%HADOOP_HOME%\bin
+%JAVA_HOME%\bin
+
+CORE-SITE
+
+<property>
+<name>fs.default.name</name>
+<value>hdfs://localhost:9820</value>
+</property>
+HADOOP ENV
+
+set JAVA_HOME=C:\Progra~1\Java\jdk-1.8
+HDFS-SITE
+
+<property>
+<name>dfs.replication</name>
+<value>1</value>
+</property>
+<property>
+<name>dfs.namenode.name.dir</name>
+<value>file:///C:/hadoopsetup/hadoop-3.2.4/data/dfs/namenode</value>
+</property>
+<property>
+<name>dfs.datanode.data.dir</name>
+<value>file:///C:/hadoopsetup/hadoop-3.2.4/data/dfs/datanode</value>
+</property>
+MAPRED-SITE
+
+<property>
+<name>mapreduce.framework.name</name>
+<value>yarn</value>
+<description>MapReduce framework name</description>
+</property>
+YARN-SITE
+
+<property>
+<name>yarn.nodemanager.aux-services</name>
+<value>mapreduce_shuffle</value>
+<description>Yarn Node Manager Aux Service</description>
+</property>
+Formatting File System
+
+hdfs namenode -format
+
+STARTING HADOOP
+
+.\start-dfs.cmd
+./start-yarn.cmd
+jps
+
+Important Links
+
+http://localhost:9870/dfshealth.html
+http://localhost:9864/datanode.html
+http://localhost:8088/cluster

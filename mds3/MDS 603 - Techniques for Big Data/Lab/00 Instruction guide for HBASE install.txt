@@ -1,0 +1,42 @@
+Instruction guide for HBASE installation:
+======================================================
+EDIT ENV VARIABLES
+C:\hbasesetup\hbase-1.4.9-bin\hbase-1.4.9
+%HBASE_HOME%\bin
+======================================================
+Goto hbase-1.4.9-bin\hbase-1.4.9\conf 
+hbase-env.sh
+set JAVA_HOME=C:\Progra~1\Java\jdk-1.8
+========================================================
+Goto hbase-1.4.9-bin\hbase-1.4.9\conf 
+hbase-site.xml
+
+Add this inside <configuration></configuration>
+
+
+<property>
+
+<name>hbase.rootdir</name>
+
+<value>file:///C:\Users\Public\hadoopsetup\hbase-1.4.9-bin\hbase-1.4.9\hbase</value>
+
+</property>
+
+<property>
+
+<name>hbase.zookeeper.property.dataDir</name>
+
+<value>C:\Users\Public\hadoopsetup\hbase-1.4.9-bin\hbase-1.4.9\zookeeper</value>
+
+</property>
+
+<property>
+
+<name>hbase.cluster.distributed</name>
+
+<value>false</value>
+
+</property>
+
+
+Create Two folder name hbase and zookeeper

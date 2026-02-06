@@ -1,0 +1,62 @@
+1. ls: List the contents of a directory.
+ 
+hadoop fs -ls [path]
+ 
+Explanation: Lists the contents of a directory in HDFS. If no path is specified, it lists the contents of the user's home directory.
+ 
+2. mkdir: Create a directory.
+ 
+hadoop fs -mkdir [path]
+Explanation: Creates a directory in HDFS. Specify the path where you want to create the directory.
+ 
+3. put: Copy files from the local filesystem into HDFS.
+ 
+hadoop fs -put [local_path] [hdfs_path]
+Explanation:: Copies files from the local filesystem into HDFS. Specify the path of the file in the local filesystem and the destination path in HDFS.
+ 
+4. get: Copy files from HDFS to the local filesystem.
+ 
+hadoop fs -get [hdfs_path] [local_path]
+ 
+Explanation:: Copies files from HDFS to the local filesystem. Specify the path of the file in HDFS and the destination path in the local filesystem.
+ 
+5. cp: Copy files within HDFS.
+ 
+hadoop fs -cp [source] [destination]
+ 
+Explanation:: Copies files within HDFS. Specify the source path and the destination path within HDFS.
+ 
+6. mv: Move files within HDFS.
+ 
+hadoop fs -mv [source] [destination]
+Explanation:: Moves files within HDFS. Specify the source path and the destination path within HDFS.
+ 
+7. rm: Delete files or directories.
+ 
+hadoop fs -rm [-r] [path]
+Explanation:: Deletes files or directories in HDFS. Specify the path of the file or directory you want to delete. Use -r to recursively delete directories.
+ 
+8. cat: Display the contents of a file.
+ 
+hadoop fs -cat [path]
+Explanation:: Displays the contents of a file in HDFS. Specify the path of the file you want to display.
+ 
+9. tail: Display the last part of a file.
+ 
+hadoop fs -tail [path]
+Explanation:: Displays the last part of a file in HDFS. Specify the path of the file you want to display.
+ 
+10. du: Display disk usage information about a file or directory.
+ 
+hadoop fs -du [path]
+Explanation:: Displays disk usage information about a file or directory in HDFS. Specify the path of the file or directory you want to get disk usage information for.
+ 
+11. count: Count the number of directories, files, and bytes under the paths that match the specified file pattern.
+ 
+hadoop fs -count [path]
+Explanation:: Counts the number of directories, files, and bytes under the paths that match the specified file pattern in HDFS. Specify the path you want to count.
+ 
+12. df: Display the amount of disk space used by the files in a directory.
+ 
+hadoop fs -df [path]
+Explanation:: Displays the amount of disk space used by the files in a directory in HDFS. Specify the path of the directory you want to get disk space information for.

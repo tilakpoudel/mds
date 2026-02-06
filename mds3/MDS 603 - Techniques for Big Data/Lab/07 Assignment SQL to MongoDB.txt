@@ -1,0 +1,94 @@
+write mongodb query for this SQL query:
+
+create a collection named 'orders' and add this document:
+
+{
+cust_id: "ID1",
+"ord_date": ISODate("2018-05-04"),
+"price": 400,
+"status": "A",
+"item qty": 20
+}
+
+{
+cust_id: "ID1",
+"ord_date": ISODate("2020-05-04"),
+"price": 400,
+"status": "not A",
+"item qty": 20
+}
+
+{
+cust_id: "ID2",
+"ord_date": ISODate("2015-05-04"),
+"price": 200,
+"status": "not A",
+"item qty": 10
+}
+
+
+
+1. SQL query:
+SELECT COUNT(*) AS count
+FROM orders
+
+
+2. SELECT SUM(price) AS total
+FROM orders
+
+
+3. SELECT cust_id,
+       SUM(price) AS total
+FROM orders
+GROUP BY cust_id
+
+
+4. SELECT cust_id,
+       SUM(price) AS total
+FROM orders
+GROUP BY cust_id
+ORDER BY total
+
+5. SELECT cust_id,
+       ord_date,
+       SUM(price) AS total
+FROM orders
+GROUP BY cust_id,
+         ord_date
+
+6. SELECT cust_id,
+       count(*)
+FROM orders
+GROUP BY cust_id
+HAVING count(*) > 1
+
+
+7. SELECT cust_id,
+       ord_date,
+       SUM(price) AS total
+FROM orders
+GROUP BY cust_id,
+         ord_date
+HAVING total > 250
+
+8. SELECT cust_id,
+       SUM(price) as total
+FROM orders
+WHERE status = 'A'
+GROUP BY cust_id
+
+9. SELECT cust_id,
+       SUM(price) as total
+FROM orders
+WHERE status = 'A'
+GROUP BY cust_id
+HAVING total > 250
+
+10. SELECT COUNT(*)
+FROM (SELECT cust_id,
+             ord_date
+      FROM orders
+      GROUP BY cust_id,
+               ord_date)
+      as DerivedTable
+

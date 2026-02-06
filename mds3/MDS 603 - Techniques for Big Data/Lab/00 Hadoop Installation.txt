@@ -1,0 +1,58 @@
+Installation of hadoop in windows:
+ 
+https://www.youtube.com/watch?v=Qy-302lSM5M&t=1s&ab_channel=Simplilearn
+ 
+Installation of Hadoop in Mac OSx:
+ 
+https://www.youtube.com/watch?v=inDC9jgwpWY&t=240s&ab_channel=CodeWithArjun
+ 
+Installation of Hadoop in Linux:
+ 
+https://www.youtube.com/watch?v=Slbi-uzPtnw&ab_channel=CodeWithArjun
+ 
+Guys, atleast give yourself 20 min hai, it should be installed. Does not takes much time. If any error comes regrading Hadoop, we will talk tomorrow.
+
+
+1. hadoop fs -mkdir /democlass   # to create directory in hadoop with name democlass
+ 
+Create file name as input.txt into Desktop and copy its location (e.g. C:/users/Desktop/input.txt)
+ 
+2. hadoop fs -put C:/users/Desktop/input.txt  /democlass  #copying input.txt to democlass hdfs directory
+ 
+# Run map reduce example: location is : (example: C:\Users\Public\hadoopsetup\hadoop-3.2.4\share\hadoop\mapreduce\hadoop-mapreduce-examples-3.2.4.jar) 
+Remember jar file is executable: make sure it is jar file
+ 
+3. hadoop jar C:\Users\Public\hadoopsetup\hadoop-3.2.4\share\hadoop\mapreduce\hadoop-mapreduce-examples-3.2.4.jar  wordcount  /democlass/input.txt  /output
+ 
+Here wordcount is class name for word count program 
+/democlass/input.txt is input file
+/output is output location
+ 
+4. NOTE: if error: something like previlege error then run command prompt in administrator mode and run step 3
+ 
+5. After map reduce sucess: check output
+ 
+6. hadoop fs -ls /output
+ 
+7. hadoop fs - cat /output/part-r-00000
+ 
+### classwork #### 
+search hadoop streaming in python in google and implement hadoop streaming (https://www.geeksforgeeks.org/hadoop-streaming-using-python-word-count-problem/)
+ 
+Hadoop streaming location: C:\Users\Public\hadoopsetup\hadoop-3.2.4\share\hadoop\tools\lib\hadoop-streaming-3.2.4.jar
+ 
+Create input.txt in desktop and put some text into it
+ 
+8. hadoop jar C:\Users\Public\hadoopsetup\hadoop-3.2.4\share\hadoop\tools\lib\hadoop-streaming-3.2.4.jar
+                 -input C:/users/desktop/input.txt 
+                -output /output  
+                -mapper C:/users/Desktop/mapper.py
+                -reducer C:/users/Desktop/reducer.py
+ 
+ 
+Mapper.py and reducer.py is in the website. Check the website properly. Make sure mapper.py and reducer.py has correct print statement... 
+print statement is incorrect for python3.+
+
+
+
+

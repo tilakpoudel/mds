@@ -1,0 +1,82 @@
+FOLLOW ALONG:
+
+[{
+  
+  "First_Name": "Radhika",
+  "Last_Name": "Sharma",
+  "Date_Of_Birth": "1995-09-26",
+  "e_mail": "radhika_sharma.123@gmail.com",
+  "phone": "9000012345",
+"age": 20
+},
+{
+  
+  "First_Name": "Rachel",
+  "Last_Name": "Christopher",
+  "Date_Of_Birth": "1990-02-16",
+  "e_mail": "Rachel_Christopher.123@gmail.com",
+  "phone": "9000054321",
+"age": 30
+},
+{
+  
+  "First_Name": "Fathima",
+  "Last_Name": "Sheik",
+  "Date_Of_Birth": "1990-02-16",
+  "e_mail": "Fathima_Sheik.123@gmail.com",
+  "phone": "9000054321",
+"age": 20
+},
+{
+  
+  "First_Name": "Ram",
+  "Last_Name": "Kumar",
+  "Date_of_Birth": "1990-6-10",
+"age": 30, 
+  "email": [
+    "Ram@gmail.com",
+    "Ram@yahoo.com"
+  ],
+  "phone": {
+    "Home_phone": "446690",
+    "Mobile_phone": "9834783873"
+  },
+  "Department": {
+    "name": "Business",
+    "location": "South West Coast"
+  }
+}]
+
+
+
+
+
+CLASSWORK:
+
+
+[
+{ "title" : "Divine Comedy", "author" : "Dante", "copies" : 1, "rating": 4, "genres": "Comedy" },
+{  "title" : "The Odyssey", "author" : "Homer", "copies" : 10, "rating": 4.5, "genres": ["fiction", "sci-fi"] },
+{  "title" : "Iliad", "author" : "Homer", "copies" : 10, "rating": 4, "genres": "fiction"},
+{  "title" : "Eclogues", "author" : "Dante", "copies" : 2, "rating": 3, "review": {"name": "Ross"}, "genres": ["fiction", "sci-fi"] },
+{ "title" : "The Banquet", "author" : "Dante", "copies" : 2, "rating" : 2, "review": {"name": "Chandler"}, "genres": ["horror", "sci-fi"] }
+]
+
+1. create a database with name as bookstore and create collection name books and insert above documents to it.
+
+2. Find the books with author name as Dante
+
+3. Find the books with author name as Dante and print its title only (donot print copies and rating)
+
+4. Find the books with author name as Homer or rating lower than 3
+
+5. Find the books with the review given by Chandler
+
+6. Sort all the books with rating in ascending order
+
+7. Find all the books with rating either 3, 4, or 5 (use $in operator or $nin operator)
+
+8. Find all the books with fiction and sci-fi as genres
+
+9. Decrease all the copies of the books by 2 units
+

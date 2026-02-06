@@ -1,0 +1,81 @@
+Classwork:
+
+$group practice:
+
+
+[
+  { "customer": "Alice", "product": "Laptop", "price": 1200, "date": "2024-03-01" },
+  { "customer": "Bob", "product": "Phone", "price": 800, "date": "2024-03-01" },
+  { "customer": "Alice", "product": "Tablet", "price": 500, "date": "2024-03-02" },
+  { "customer": "Charlie", "product": "Laptop", "price": 1000, "date": "2024-03-02" },
+  { "customer": "Bob", "product": "Laptop", "price": 1300, "date": "2024-03-03" },
+  { "customer": "Alice", "product": "Phone", "price": 700, "date": "2024-03-03" },
+  { "customer": "Bob", "product": "Tablet", "price": 600, "date": "2024-03-03" }
+]
+
+
+
+1. Total Sales Revenue per Customer
+
+2. Total Sales Count per Product
+
+3. Average Price per Product
+
+4. Maximum Purchase Price per Customer
+
+5. Minimum Purchase Price per Customer
+
+6. Total Revenue per Day
+
+7. Total Revenue per Product per Day
+
+8. Total Revenue and Count of Transactions per Customer
+
+9. Average Purchase Price per Customer per Product
+
+10. Grouping Customers by Their First Letter
+
+
+
+===================================================================================================================
+
+
+THIS IS NOT IMPORTANT FOR EXAM....
+
+
+
+use nosql_workshop
+
+
+dept = ["IT", "Engineering", "QA", "Data", "Product"];
+
+
+for (i = 0; i < 100; i++) { 
+   db.employees.insert({ 
+      id: i, 
+      empId: 'empId_' + i, 
+      deptName: dept[Math.round(Math.random() * 4)], 
+      experience: Math.round(Math.random() * 30) 
+   }); 
+}
+
+
+1. Please make sure to make the field 'DEPARTMENT' is in all caps with mongodb. Also use the experience field and add one to it.
+
+2. Please use the employees collection and now only get employees that are part of engineering using aggregations:
+
+Hint: you will need to add another pipeline stage and find the match.
+
+3. Please use the employees collection and group the number of employees by department and their respective years of experience.
+The fields returned should be:
+
+_id
+Should be a document with Department and yearsExperience
+numEmployees should count the number of employees
+
+
+4. Please reuse the aggregate query in exercise 3 but now sort using the Department field in the _id field
+
+5. Please reuse the aggregate query in exercise 4 but use the $skip and $limit aggregation pipeline stage to skip the first 5 and limit to 2 records
+
+

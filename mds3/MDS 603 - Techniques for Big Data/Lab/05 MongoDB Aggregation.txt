@@ -1,0 +1,45 @@
+** Create a dababase name practice and create collection name order**
+** Inside order create multiple documents with key value pair yourself **
+For example of one such document: (make sure multiple cust_id has same value (for grouping purpose))
+{
+cust_id: "ID1",
+"ord_date": ISODate("2018-05-04"),
+"price": 400,
+"status": "A",
+"item qty": 20
+}
+
+{
+cust_id: "ID1",
+"ord_date": ISODate("2020-05-04"),
+"price": 400,
+"status": "not A",
+"item qty": 20
+}
+
+{
+cust_id: "ID2",
+"ord_date": ISODate("2015-05-04"),
+"price": 200,
+"status": "not A",
+"item qty": 10
+}
+# Insert multiple such record
+
+1. For each unique cust_id, sum the price field on your created order collection
+
+2. For each unique cust_id, sum the price field, results sorted by sum in order collection
+
+3. For each unique cust_id, ord_date grouping, sum the price field. Excludes the time portion of the date.
+
+4. For cust_id with multiple records, return the cust_id and the corresponding record count.
+
+5. For each unique cust_id, ord_date grouping, sum the price field and return only where the sum is greater than 250. Excludes the time portion of the date.
+
+6. For each unique cust_id with status A, sum the price field
+
+7. For each unique cust_id with status A, sum the price field and return only where the sum is greater than 250.
+
+8. For each unique cust_id, sum the corresponding line item qty fields associated with the orders.
+
+9. Count the number of distinct cust_id, ord_date groupings. Excludes the time portion of the date.

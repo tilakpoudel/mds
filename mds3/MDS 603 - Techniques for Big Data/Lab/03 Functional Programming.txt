@@ -1,0 +1,145 @@
+Mapper:
+
+Takes input key, value pairs and generates intermediate key value pairs
+
+Class Mapper<KEYIN,VALUEIN,KEYOUT,VALUEOUT>
+
+
+Example:
+ public class TokenCounterMapper 
+     extends Mapper<Object, Text, Text, IntWritable>
+
+
+Different functions:
+
+1. protected void setup(org.apache.hadoop.mapreduce.Mapper.Context context)
+              throws IOException,
+                     InterruptedException
+Called once at the beginning of the task.
+
+
+2. protected void map(KEYIN key,
+       VALUEIN value,
+       org.apache.hadoop.mapreduce.Mapper.Context context)
+            throws IOException,
+                   InterruptedException
+
+	// LOgic
+Called once for each key/value pair in the input split. Most applications should override this, but the default is the identity function.
+
+3. protected void cleanup(org.apache.hadoop.mapreduce.Mapper.Context context)
+                throws IOException,
+                       InterruptedException
+Called once at the end of the task.
+
+4. public void run(org.apache.hadoop.mapreduce.Mapper.Context context)
+         throws IOException,
+                InterruptedException
+Expert users can override this method for more complete control over the execution of the Mapper.
+
+
+
+
+********************** Reducer ********************************
+
+Reducer<K2,V2,K3,V3>
+
+void reduce(K2 key,
+            Iterator<V2> values,
+            OutputCollector<K3,V3> output,
+            Reporter reporter)
+            throws IOException
+
+
+Reduces values for a given key.
+
+
+
+
+******************* Driver ************************************
+
+
+
+public static void main(String[] args) throws Exception {
+: 
+    Configuration conf = new Configuration(); //configuration key value format and can change configuration like hdfs replication etc
+
+    Job job = Job.getInstance(conf, "word count"); job instance, submit and control of execution of job
+    job.setJarByClass(WordCount.class); class name
+    job.setMapperClass(TokenizerMapper.class);mapper class name
+    job.setCombinerClass(IntSumReducer.class); combiner class name
+    job.setReducerClass(IntSumReducer.class); reducer class name
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(IntWritable.class);
+    FileInputFormat.addInputPath(job, new Path(args[0]));
+    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+    System.exit(job.waitForCompletion(true) ? 0 : 1);
+  }
+}
+
+
+
+
+For Example:
+
+import java.io.IOException;
+import java.util.StringTokenizer;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+public class WordCount {
+
+  public static class TokenizerMapper
+       extends Mapper<Object, Text, Text, IntWritable>{
+
+    private final static IntWritable one = new IntWritable(1);
+    private Text word = new Text();
+
+    public void map(Object key, Text value, Context context
+                    ) throws IOException, InterruptedException {
+      StringTokenizer itr = new StringTokenizer(value.toString());
+      while (itr.hasMoreTokens()) {
+        word.set(itr.nextToken());
+        context.write(word, one);
+      }
+    }
+  }
+
+  public static class IntSumReducer
+       extends Reducer<Text,IntWritable,Text,IntWritable> {
+    private IntWritable result = new IntWritable();
+
+    public void reduce(Text key, Iterable<IntWritable> values,
+                       Context context
+                       ) throws IOException, InterruptedException {
+      int sum = 0;
+      for (IntWritable val : values) {
+        sum += val.get();
+      }
+      result.set(sum);
+      context.write(key, result);
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    Configuration conf = new Configuration();
+    Job job = Job.getInstance(conf, "word count");
+    job.setJarByClass(WordCount.class);
+    job.setMapperClass(TokenizerMapper.class);
+    job.setCombinerClass(IntSumReducer.class);
+    job.setReducerClass(IntSumReducer.class);
+    job.setOutputKeyClass(Text.class);
+    job.setOutputValueClass(IntWritable.class);
+    FileInputFormat.addInputPath(job, new Path(args[0]));
+    FileOutputFormat.setOutputPath(job, new Path(args[1]));
+    System.exit(job.waitForCompletion(true) ? 0 : 1);
+  }
+}
