@@ -1,0 +1,31 @@
+Q. Find movies released exactly in 1994.
+Q. Find movies not rated "R".
+Q. Show  only title, year, genres — hide _id of 2000 year movie.
+Q. Find movies with runtime greater than 180 minutes.
+Q. Find movies released before 1950.
+Q. Find movies with IMDb rating between 8 and 9 (inclusive).
+Q. Find movies rated "PG" or "PG-13" or "G".
+Q.  Find movies from 1990 OR with 10+ award wins
+Q. Find movies with the exactly this genres: [
+    'Short',
+    'Drama' ]
+Q. Find movies with the atleast this genres: [
+    'Short',
+    'Drama' ]
+    
+Q. Find movies with imdb rating of more than 7 and tomatoes viewer rating of less than 4 and sort it in asc with lastUpdated field.
+Q. Find movies where runtime is NOT less than 120.
+Q. Find movies from 2010 that won 5+ awards OR are Drama.
+Q. Find movies that have a plot field.
+Q.Find movies whose title starts with "The".
+ 
+Q.Find movies whose title contains "love" (case-insensitive).
+
+Q. Find movies where viewer rating is higher than critic rating on Rotten Tomatoes.
+
+Q. Find movies where tomatoes viewer rating is same as tomatoes critic rating (exact match between two fields).
+
+Q. Find movies where total awards (wins + nominations) exceed 50
+
+ 
+ 
