@@ -1,6 +1,6 @@
 ---
 title: 'Logistic Regression Analysis: Pima Indians Diabetes'
-author: "Data Analysis Report"
+author: "Tilak Poudel MDS 3rd sem, Roll no. 36"
 date: "`r Sys.Date()`"
 output: 
   pdf_document:
@@ -38,6 +38,7 @@ First, we load the required libraries for our analytical pipeline. We use `mlben
 ```{r load data}
 data("PimaIndiansDiabetes2")
 glimpse(PimaIndiansDiabetes2)
+summary(PimaIndiansDiabetes2)
 ```
 
 # 2. Data Cleaning & Imputation
@@ -83,6 +84,11 @@ ggplot(clean_diabetes, aes(x = diabetes, y = glucose, fill = diabetes)) +
     )
 ```
 
+The boxplot visualizing plasma glucose concentration against diabetes status demonstrates a clear, foundational biological relationship: `individuals diagnosed with diabetes typically exhibit significantly higher blood glucose levels compared to those without the condition`.
+
+### Observation:
+The graph provides visual proof that `glucose` is a highly significant differentiator, while simultaneously showing enough variance and overlap to confirm that a multi-variable statistical model is necessary to make accurate predictions.
+
 # 4. Data Splitting
 
 We perform an 80/20 train-test split using stratified sampling via caret to ensure equivalent base-rate metrics in both validation matrices.
@@ -106,6 +112,28 @@ diabetes_model <- glm(diabetes ~ ., data = train_set, family = binomial)
 summary(diabetes_model)
 ```
 
+### Observation
+#### Statistical Significance: Who Matters?
+
+Let's look at the Pr(>|z|) column (the p-values) and the asterisks (***). 
+If a p-value is less than $0.05$, that variable is a statistically significant predictor of diabetes.
+
+Highly Significant Predictors (*** or ):
+
+- glucose ($p < 2\times 10^{-16}$) — By far the strongest predictor.
+- pregnant ($p = 6.73\times 10^{-6}$)
+- mass (BMI) ($p = 7.23\times 10^{-5}$)
+- pedigree (Diabetes pedigree function) ($p = 0.002$)
+
+Not Significant Predictors:
+
+- pressure ($p = 0.633$), 
+- triceps ($p = 0.743$), 
+- insulin ($p = 0.480$), and 
+- age ($p = 0.992$).
+
+#### Insight: Notice that age is not significant here. That doesn't mean age doesn't matter in real life; it means that once we already know a patient's glucose, BMI, and pregnancy history, adding their exact age provides no additional predictive power to the model.
+
 ## Collinearity Testing
 We calculate the Variance Inflation Factor (VIF) to ensure that inter-variable correlations do not warp our standard error values.
 
@@ -113,7 +141,9 @@ We calculate the Variance Inflation Factor (VIF) to ensure that inter-variable c
 vif(diabetes_model)
 
 ```
-Note: No VIF metrics cross above the conservative benchmark threshold ($\text{VIF} > 5$). Structural multicollinearity is not an issue in this context.
+### Observation: 
+
+No VIF metrics cross above the conservative benchmark threshold ($\text{VIF} > 5$). Structural multicollinearity is not an issue in this context.
 
 ## Odds Ratios: 
 To evaluate effect sizing intuitively, we convert log-odds metrics to standard risk-based Odds Ratios (OR) alongside their $95\%$ confidence bounds.
@@ -121,6 +151,23 @@ To evaluate effect sizing intuitively, we convert log-odds metrics to standard r
 ```{r odd ratios}
 exp(cbind(OR = coef(diabetes_model), confint(diabetes_model)))
 ```
+
+### Observation:
+
+An Odds Ratio tells how the likelihood of the outcome (having diabetes) changes with a 1-unit increase in that specific predictor variable.
+
+- $\text{OR} = 1.0$: The predictor has no effect on the odds of diabetes.
+- $\text{OR} > 1.0$: The predictor increases the odds of diabetes (risk factor).
+- $\text{OR} < 1.0$: The predictor decreases the odds of diabetes (protective factor).
+
+**Glucose (OR = 1.0416)**:
+
+For every 1-unit increase in plasma glucose concentration, the odds of a patient developing diabetes increase by $4.16\%$ (calculated as $1.0416 - 1 = 0.0416$).
+
+**Mass / BMI (OR = 1.0910)**:
+
+For every 1-unit increase in BMI, a patient's odds of being diabetic increase by $9.1\%$ ($1.0910 - 1$). If someone's BMI jumps by 10 units, their risk multiplies significantly.
+
 # 6. Out-of-Sample Performance Evaluation
 Now we apply our fitted parameters to the untouched validation test set. Predictions are generated as probabilities and converted to factor levels using the traditional $0.5$ classification cutoff threshold.
 
@@ -139,27 +186,85 @@ We calculate predictive indicators (Accuracy, Sensitivity, and Specificity) to e
 
 ```{r confusion matrix}
 confusionMatrix(test_set$pred_class, test_set$diabetes, positive = "pos")
-
 ```
+
+### Observation:
+
+ **Accuracy : 0.7647**
+
+- True Negatives (87): The model correctly predicted 87 healthy patients as neg.
+
+- True Positives (30): The model correctly predicted 30 diabetic patients as pos.
+
+- False Positives (13): The model flagged 13 healthy people as diabetic.
+
+- False Negatives (23): The model cleared 23 diabetic patients, telling them they were healthy.
+
+**Sensitivity (0.5660)**:
+
+Out of all the people who actually have diabetes in test pool, the model successfully caught $56.6\%$ of them.
+
+***Critique***: 
+This is the weakest link in the current model. It means we are missing $43.4\%$ of the diabetic patients (the 23 False Negatives), sending them home without treatment.
+
+**Specificity (0.8700)**:
+
+Out of all the truly healthy people, the model correctly identified $87.0\%$ of them. It is highly specific, meaning it rarely panics or triggers false alarms for healthy individuals.
 
 ## Discrimination Mapping (ROC & AUC)
 Finally, we run a threshold sweep across the true positive/false positive spectrum to establish discrimination power via the Area Under the Curve (AUC).
 
-```{r roc and auc}
-# Generate performance tracking profiles
+
+```{r roc-auc}
+# 1. Generate performance tracking profiles
 pred_obj <- prediction(test_set$prob, test_set$diabetes)
 perf_obj <- performance(pred_obj, measure = "tpr", x.measure = "fpr")
 
-# Plot ROC Space
+# 2. Extract numeric AUC value dynamically
+auc_obj   <- performance(pred_obj, measure = "auc")
+auc_value <- round(auc_obj@y.values[[1]], 4)
+cat("Final Area Under the Curve (AUC):", auc_value, "\n")
+
+# 3. Plot the base ROC Curve Space
 plot(perf_obj, col = "darkgreen", lwd = 2, main = "ROC Curve: Pima Indians Diabetes Model")
 abline(a = 0, b = 1, lty = 2, col = "red") # Random baseline
 
-# Isolate numeric AUC value
-auc_obj <- performance(pred_obj, measure = "auc")
-cat("Final Area Under the Curve (AUC):", round(auc_obj@y.values[[1]], 4), "\n")
+# 4. Corrected Legend Overlay
+legend("bottomright", 
+       legend = paste("AUC =", auc_value), 
+       bty = "o",           # Draws a complete border box ("o" for outer box)
+       box.col = "gray",    # Border color
+       bg = "white",        # Box background fill
+       inset = 0.05)        # Slight padding away from the exact margins
 
 ```
 
+# 7. Real-Time Risk Prediction for Sample Patients
 
+We pass completely new, hypothetical patient observations through our model matrix to observe how risk calculations change based on clinical traits.
 
+```{r patient-predictions}
+# Create custom sample patients matching the original data framework
+new_patients <- tibble(
+  pregnant = c(6, 1),
+  glucose  = c(165, 95),
+  pressure = c(82, 70),
+  triceps  = c(35, 18),
+  insulin  = c(180, 60),
+  mass     = c(38.5, 22.0),
+  pedigree = c(1.25, 0.25),
+  age      = c(45, 24)
+)
 
+# Assign readable profile names
+rownames(new_patients) <- c("Patient_1_HighRisk", "Patient_2_LowRisk")
+
+# Predict exact continuous probabilities
+new_patients$Predicted_Probability <- predict(diabetes_model, newdata = new_patients, type = "response")
+
+# Convert to final binary decision tag (using our standard 0.5 threshold)
+new_patients$Predicted_Class <- ifelse(new_patients$Predicted_Probability > 0.5, "Positive", "Negative")
+
+# Display the prediction matrix
+knitr::kable(new_patients %>% select(glucose, mass, pedigree, Predicted_Probability, Predicted_Class), 
+             caption = "Model Assessment of New Patient Samples")
