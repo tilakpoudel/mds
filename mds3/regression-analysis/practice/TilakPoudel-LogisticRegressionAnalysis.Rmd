@@ -1,0 +1,165 @@
+---
+title: 'Logistic Regression Analysis: Pima Indians Diabetes'
+author: "Data Analysis Report"
+date: "`r Sys.Date()`"
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 2
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+# Set global chunk options
+knitr::opts_chunk$set(
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
+  comment = "#>"
+)
+
+```
+
+# Load Libraries
+
+```{r 'load libraries'}
+library(mlbench)   # For PimaIndiansDiabetes2
+library(tidyverse) # For data transformation & plots
+library(caret)     # For partitioning & confusion matrix
+library(ROCR)      # For ROC & AUC calculation
+library(mice)      # For handling missing values via imputation
+library(car)       # For VIF calculations
+
+```
+
+# 1. Environment Setup & Data Loading
+First, we load the required libraries for our analytical pipeline. We use `mlbench` for our source data,`mice` for handling missing features, `tidyverse` for data manipulation/visualization, and `caret/ROCR` for cross-validation diagnostics.
+
+```{r load data}
+data("PimaIndiansDiabetes2")
+glimpse(PimaIndiansDiabetes2)
+```
+
+# 2. Data Cleaning & Imputation
+```{r data cleaning}
+
+colSums(is.na(PimaIndiansDiabetes2))
+
+```
+
+To avoid discarding partial information, we execute Multiple Imputation by Chained Equations (MICE) using Predictive Mean Matching (PMM) to fill missing data points based on surrounding patient trends.
+
+```{r imputation}
+
+set.seed(123)
+# Run imputation routing
+imputed_data <- mice(PimaIndiansDiabetes2, m = 1, method = "pmm", printFlag = FALSE)
+
+# Build out the completed dataset
+clean_diabetes <- complete(imputed_data)
+
+sum(is.na(clean_diabetes))
+
+```
+
+# 3. Exploratory Data Analysis (EDA)
+Before building our statistical equations, we check the baseline distribution of the target variable (diabetes) to establish class balances.
+
+```{r check data }
+prop.table(table(clean_diabetes$diabetes))
+
+```
+
+We now isolate plasma glucose values across positive and negative diagnostic states to visualize group variance.
+
+```{r eda}
+ggplot(clean_diabetes, aes(x = diabetes, y = glucose, fill = diabetes)) +
+    geom_boxplot(alpha = 0.7) +
+    theme_minimal() +
+    labs(
+      title = "Glucose Concentration by Diabetes Status", 
+      x = "Diabetes Status", 
+      y = "Plasma Glucose"
+    )
+```
+
+# 4. Data Splitting
+
+We perform an 80/20 train-test split using stratified sampling via caret to ensure equivalent base-rate metrics in both validation matrices.
+
+
+```{r data splitting}
+set.seed(42)
+
+# Generate partition indexes
+train_index <- createDataPartition(clean_diabetes$diabetes, p = 0.8, list = FALSE)
+
+train_set <- clean_diabetes[train_index, ]
+test_set  <- clean_diabetes[-train_index, ]
+```
+
+# 5. Model Estimation & Diagnostics
+We construct a binary generalized linear model using the complete matrix of explanatory features under a logit link function.
+
+```{r model fitting}
+diabetes_model <- glm(diabetes ~ ., data = train_set, family = binomial)
+summary(diabetes_model)
+```
+
+## Collinearity Testing
+We calculate the Variance Inflation Factor (VIF) to ensure that inter-variable correlations do not warp our standard error values.
+
+```{r multicollinearity test}
+vif(diabetes_model)
+
+```
+Note: No VIF metrics cross above the conservative benchmark threshold ($\text{VIF} > 5$). Structural multicollinearity is not an issue in this context.
+
+## Odds Ratios: 
+To evaluate effect sizing intuitively, we convert log-odds metrics to standard risk-based Odds Ratios (OR) alongside their $95\%$ confidence bounds.
+
+```{r odd ratios}
+exp(cbind(OR = coef(diabetes_model), confint(diabetes_model)))
+```
+# 6. Out-of-Sample Performance Evaluation
+Now we apply our fitted parameters to the untouched validation test set. Predictions are generated as probabilities and converted to factor levels using the traditional $0.5$ classification cutoff threshold.
+
+```{r perf evaluation}
+
+# Calculate continuous risk probabilities
+test_set$prob <- predict(diabetes_model, newdata = test_set, type = "response")
+
+# Convert probabilities to factors
+test_set$pred_class <- factor(ifelse(test_set$prob > 0.5, "pos", "neg"), levels = c("neg", "pos"))
+
+```
+
+## Confusion Matrix Diagnostics
+We calculate predictive indicators (Accuracy, Sensitivity, and Specificity) to evaluate spatial performance.
+
+```{r confusion matrix}
+confusionMatrix(test_set$pred_class, test_set$diabetes, positive = "pos")
+
+```
+
+## Discrimination Mapping (ROC & AUC)
+Finally, we run a threshold sweep across the true positive/false positive spectrum to establish discrimination power via the Area Under the Curve (AUC).
+
+```{r roc and auc}
+# Generate performance tracking profiles
+pred_obj <- prediction(test_set$prob, test_set$diabetes)
+perf_obj <- performance(pred_obj, measure = "tpr", x.measure = "fpr")
+
+# Plot ROC Space
+plot(perf_obj, col = "darkgreen", lwd = 2, main = "ROC Curve: Pima Indians Diabetes Model")
+abline(a = 0, b = 1, lty = 2, col = "red") # Random baseline
+
+# Isolate numeric AUC value
+auc_obj <- performance(pred_obj, measure = "auc")
+cat("Final Area Under the Curve (AUC):", round(auc_obj@y.values[[1]], 4), "\n")
+
+```
+
+
+
+
